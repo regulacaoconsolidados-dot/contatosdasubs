@@ -122,26 +122,29 @@
       font-weight: 400;
     }
 
-    .search-wrapper button {
-      background: #0b2b4a;
+    .search-wrapper .search-icon {
+      color: #6b7f9a;
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+    }
+
+    .search-wrapper .clear-btn {
+      background: none;
       border: none;
-      color: white;
-      padding: 0.7rem 2.2rem;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.95rem;
+      color: #9aa6b9;
+      font-size: 1.3rem;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      white-space: nowrap;
-      letter-spacing: 0.4px;
+      padding: 0 0.8rem;
+      display: none;
+      transition: color 0.2s;
     }
 
-    .search-wrapper button:hover {
-      background: #1e4b70;
+    .search-wrapper .clear-btn:hover {
+      color: #1a3f62;
     }
 
-    .search-wrapper button:active {
-      transform: scale(0.96);
+    .search-wrapper .clear-btn.visible {
+      display: block;
     }
 
     /* ===== FILTER BUTTONS (distritos) ===== */
@@ -304,6 +307,21 @@
       font-size: 1.1rem;
     }
 
+    /* ===== CONTADOR ===== */
+    .results-counter {
+      text-align: center;
+      color: #3a4c6b;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+
+    .results-counter strong {
+      color: #0b2b4a;
+      font-weight: 600;
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 640px) {
       .header {
@@ -325,10 +343,8 @@
         border-radius: 60px;
         border: 1px solid #dde3ed;
       }
-      .search-wrapper button {
-        width: 100%;
-        justify-content: center;
-        padding: 0.8rem;
+      .search-wrapper .clear-btn {
+        padding: 0 0.5rem;
       }
       .filter-bar {
         gap: 0.4rem 0.8rem;
@@ -370,8 +386,9 @@
 
 <!-- ========== SEARCH ========== -->
 <div class="search-wrapper">
-  <input type="text" id="searchInput" placeholder="Buscar ferramentas, painéis, unidades, endereço ou e-mail..." />
-  <button id="searchButton">🔍 Buscar</button>
+  <span class="search-icon">🔍</span>
+  <input type="text" id="searchInput" placeholder="Digite para buscar unidades, endereço, telefone ou e-mail..." autofocus />
+  <button class="clear-btn" id="clearBtn" aria-label="Limpar busca">✕</button>
 </div>
 
 <!-- ========== FILTERS (distritos) ========== -->
@@ -386,6 +403,9 @@
   <button class="filter-btn" data-distrito="sede">🏙️ Sede</button>
   <button class="filter-btn" data-distrito="riacho">🏞️ Riacho</button>
 </div>
+
+<!-- ========== CONTADOR ========== -->
+<div class="results-counter" id="resultsCounter">Mostrando <strong>0</strong> unidades</div>
 
 <!-- ========== CARDS ========== -->
 <div class="cards-grid" id="cardsContainer"></div>
@@ -508,7 +528,8 @@
     // ----- DOM refs -----
     const container = document.getElementById('cardsContainer');
     const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
+    const clearBtn = document.getElementById('clearBtn');
+    const counter = document.getElementById('resultsCounter');
     const filterBtns = document.querySelectorAll('.filter-btn');
 
     let currentFilter = 'todos';
@@ -530,6 +551,9 @@
         }
         return true;
       });
+
+      // Atualizar contador
+      counter.innerHTML = `Mostrando <strong>${filtered.length}</strong> unidade${filtered.length !== 1 ? 's' : ''}`;
 
       if (filtered.length === 0) {
         container.innerHTML = `<div class="no-results">🔎 Nenhuma unidade encontrada com esse filtro ou busca.</div>`;
@@ -562,34 +586,43 @@
       container.innerHTML = html;
     }
 
-    // ----- filter + search triggers -----
-    function applyFilterAndSearch() {
+    // ----- atualizar busca e filtro -----
+    function applyFilters() {
       render();
+      // mostrar/ocultar botão limpar
+      if (searchInput.value.length > 0) {
+        clearBtn.classList.add('visible');
+      } else {
+        clearBtn.classList.remove('visible');
+      }
     }
 
-    // eventos de filtro
+    // ----- eventos de busca (instantânea) -----
+    searchInput.addEventListener('input', function() {
+      currentSearch = this.value;
+      applyFilters();
+    });
+
+    // botão limpar
+    clearBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      currentSearch = '';
+      applyFilters();
+      searchInput.focus();
+    });
+
+    // ----- eventos de filtro -----
     filterBtns.forEach(btn => {
       btn.addEventListener('click', function(e) {
         filterBtns.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         currentFilter = this.dataset.distrito;
-        applyFilterAndSearch();
+        applyFilters();
       });
     });
 
-    // eventos de busca
-    function handleSearch() {
-      currentSearch = searchInput.value;
-      applyFilterAndSearch();
-    }
-
-    searchButton.addEventListener('click', handleSearch);
-    searchInput.addEventListener('keyup', function(e) {
-      if (e.key === 'Enter') handleSearch();
-    });
-
     // inicial
-    render();
+    applyFilters();
   })();
 </script>
 </body>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contatos · Distritos Sanitários</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
+    body {
+      background: #f5f7fc;
+      padding: 2rem 1rem;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: linear-gradient(145deg, #0b2b4a 0%, #1a3f62 100%);
+      color: white;
+      padding: 2rem 2rem 1.5rem 2rem;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px rgba(0, 20, 40, 0.25);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -10%;
+      width: 280px;
+      height: 280px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .header h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .header-sub {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      margin-top: 0.4rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 0.9rem;
+    }
+
+    .header-sub .org {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+
+    .header-sub .org strong {
+      opacity: 1;
+      color: #ffd966;
+    }
+
+    .header-sub .dev {
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      backdrop-filter: blur(2px);
+    }
+
+    .header-sub .motto {
+      width: 100%;
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: 0.3px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.25rem;
+    }
+
+    /* ===== SEARCH ===== */
+    .search-wrapper {
+      max-width: 700px;
+      margin: 0 auto 2.5rem auto;
+      background: white;
+      border-radius: 60px;
+      padding: 0.3rem 0.3rem 0.3rem 1.8rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      border: 1px solid #e9edf4;
+      transition: box-shadow 0.25s, border-color 0.2s;
+    }
+
+    .search-wrapper:focus-within {
+      box-shadow: 0 8px 24px rgba(0, 70, 150, 0.12);
+      border-color: #1a3f62;
+    }
+
+    .search-wrapper input {
+      border: none;
+      padding: 0.9rem 0;
+      font-size: 1rem;
+      width: 100%;
+      background: transparent;
+      outline: none;
+      color: #1e2a3e;
+    }
+
+    .search-wrapper input::placeholder {
+      color: #9aa6b9;
+      font-weight: 400;
+    }
+
+    .search-wrapper button {
+      background: #0b2b4a;
+      border: none;
+      color: white;
+      padding: 0.7rem 2.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+      letter-spacing: 0.4px;
+    }
+
+    .search-wrapper button:hover {
+      background: #1e4b70;
+    }
+
+    .search-wrapper button:active {
+      transform: scale(0.96);
+    }
+
+    /* ===== FILTER BUTTONS (distritos) ===== */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem 1.2rem;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+      padding: 0 0.2rem;
+    }
+
+    .filter-btn {
+      background: white;
+      border: 1px solid #dde3ed;
+      padding: 0.5rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #1e2a3e;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      letter-spacing: 0.3px;
+    }
+
+    .filter-btn:hover {
+      border-color: #1a3f62;
+      background: #f0f5ff;
+      transform: translateY(-1px);
+    }
+
+    .filter-btn.active {
+      background: #0b2b4a;
+      border-color: #0b2b4a;
+      color: white;
+      box-shadow: 0 6px 12px rgba(11, 43, 74, 0.18);
+    }
+
+    /* ===== CARDS GRID ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.8rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+      border: 1px solid #edf0f7;
+      transition: transform 0.2s, box-shadow 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 32px rgba(0, 20, 40, 0.08);
+      border-color: #d4dceb;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0b2b4a;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+
+    .card-distrito {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #1a5b7a;
+      background: #e5edf8;
+      display: inline-block;
+      padding: 0.2rem 0.9rem;
+      border-radius: 40px;
+      margin-bottom: 0.8rem;
+      align-self: flex-start;
+      font-weight: 600;
+    }
+
+    .card-address {
+      font-size: 0.95rem;
+      color: #2d3a54;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+    }
+
+    .card-address i {
+      opacity: 0.6;
+      margin-right: 0.2rem;
+    }
+
+    .card-phone {
+      font-size: 0.95rem;
+      color: #1e3b5c;
+      margin: 0.25rem 0 0.2rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.8rem;
+    }
+
+    .card-phone span {
+      background: #f2f6fd;
+      padding: 0.1rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .card-email {
+      font-size: 0.85rem;
+      color: #1a5a8c;
+      word-break: break-all;
+      margin-top: 0.4rem;
+      background: #f8faff;
+      padding: 0.3rem 0.7rem;
+      border-radius: 30px;
+      display: inline-block;
+      border: 1px solid #e0e9f5;
+    }
+
+    .card-email a {
+      color: #0b2b4a;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .card-email a:hover {
+      text-decoration: underline;
+    }
+
+    .card-tag {
+      margin-top: 0.6rem;
+      font-size: 0.7rem;
+      color: #5b6f8a;
+      background: #f0f3fa;
+      padding: 0.1rem 0.9rem;
+      border-radius: 30px;
+      align-self: flex-start;
+    }
+
+    /* ===== no results ===== */
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 0;
+      color: #3a4c6b;
+      font-weight: 400;
+      background: #f0f4fe;
+      border-radius: 60px;
+      font-size: 1.1rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .header {
+        padding: 1.5rem;
+      }
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      .search-wrapper {
+        flex-wrap: wrap;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        gap: 0.6rem;
+      }
+      .search-wrapper input {
+        background: white;
+        padding: 0.9rem 1.5rem;
+        border-radius: 60px;
+        border: 1px solid #dde3ed;
+      }
+      .search-wrapper button {
+        width: 100%;
+        justify-content: center;
+        padding: 0.8rem;
+      }
+      .filter-bar {
+        gap: 0.4rem 0.8rem;
+      }
+      .filter-btn {
+        font-size: 0.75rem;
+        padding: 0.3rem 1rem;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+    }
+
+    /* ícone simbólico */
+    .icon-addr::before { content: "📍"; margin-right: 4px; opacity: 0.7; }
+    .icon-phone::before { content: "📞"; margin-right: 4px; opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <h1>🏥 Ferramentas Administrativas</h1>
+  <div class="header-sub">
+    <div class="org">
+      <strong>Diretoria de Regulação do Acesso</strong><br>
+      Superintendente: Yara Ariane M.S.Souza<br>
+      Diretora: Paloma Morais
+    </div>
+    <div class="dev">
+      Desenvolvido por Ana P. A. Silva — Matric. 201704
+    </div>
+    <div class="motto">
+      “Nenhum de nós é tão bom quanto todos nós juntos!”
+    </div>
+  </div>
+</header>
+
+<!-- ========== SEARCH ========== -->
+<div class="search-wrapper">
+  <input type="text" id="searchInput" placeholder="Buscar ferramentas, painéis, unidades, endereço ou e-mail..." />
+  <button id="searchButton">🔍 Buscar</button>
+</div>
+
+<!-- ========== FILTERS (distritos) ========== -->
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-distrito="todos">📋 Todos</button>
+  <button class="filter-btn" data-distrito="eldorado">🌳 Eldorado</button>
+  <button class="filter-btn" data-distrito="industrial">🏭 Industrial</button>
+  <button class="filter-btn" data-distrito="ressaca">🌊 Ressaca</button>
+  <button class="filter-btn" data-distrito="nacional">🏛️ Nacional</button>
+  <button class="filter-btn" data-distrito="vargem">🌿 Vargem das Flores</button>
+  <button class="filter-btn" data-distrito="petrolândia">⛽ Petrolândia</button>
+  <button class="filter-btn" data-distrito="sede">🏙️ Sede</button>
+  <button class="filter-btn" data-distrito="riacho">🏞️ Riacho</button>
+</div>
+
+<!-- ========== CARDS ========== -->
+<div class="cards-grid" id="cardsContainer"></div>
+
+<script>
+  (function() {
+    // -------------------------------------------------------------
+    // DADOS (conforme planilha, com distrito identificado)
+    // -------------------------------------------------------------
+    const unidades = [
+      // ---- ELDORADO ----
+      { nome: "Distrito Sanitário Eldorado", endereco: "Rua Oliveira n° 362", telefones: ["3392-2137", "ZOONOSES 3392-2211", "EPIDEMIO 3392-2175", "2151", "ADM GC ADRIANA 3356-6270"], email: "marcacaodistritoeldorado@gmail.com", distrito: "eldorado" },
+      { nome: "UBS CSU Eldorado", endereco: "Rua Portugal nº 50", telefones: ["5548", "3352-5251", "3392-2171", "3353-3548", "3911-4748", "(99257-2635 Institucional)"], email: "marcacaocsu@gmail.com", distrito: "eldorado" },
+      { nome: "UBS Água Branca", endereco: "Rua Seis N°320", telefones: ["3394-8059", "3352-5245", "3394-8574"], email: "ubsaguabranca@gmail.com", distrito: "eldorado" },
+      { nome: "UBS Jardim Bandeirantes", endereco: "Avenida Água Branca N°317", telefones: ["3352-5248", "3353-2401", "2410"], email: "marcacaoadm@gmail.com", distrito: "eldorado" },
+      { nome: "UBS Novo Eldorado", endereco: "Rua Guilhermina de Oliveira n 60", telefones: ["3472-6397", "3363-5736"], email: "marcacaonovoeldorado@gmail.com", distrito: "eldorado" },
+      { nome: "UBS Santa Cruz", endereco: "Rua Tubira nº 173", telefones: ["3911-9423", "3911-9460", "(99257-1809 Institucional)"], email: "marcacaosantacruz@gmail.com", distrito: "eldorado" },
+      { nome: "UBS Unidade XV", endereco: "Rua Oliveira n° 362", telefones: ["3356-1214", "3352-5271"], email: "cmcusfxv@gmail.com", distrito: "eldorado" },
+      { nome: "USF Parque São João I (USF 73)", endereco: "Rua Sete N° 54", telefones: ["3352-5259", "3911-4852", "3352-2058", "ODONTO 3352-5846"], email: "marcacaopsaojoao@gmail.com", distrito: "eldorado" },
+      { nome: "USF Parque São João II (USF 76)", endereco: "Rua Sete N° 54", telefones: ["3352-5259", "3911-4852", "3352-2058", "ODONTO 3352-5846"], email: "marcacaopsaojoao@gmail.com", distrito: "eldorado" },
+      { nome: "USF Parque São João III (USF 85)", endereco: "Rua Sete N° 54", telefones: ["3352-5259", "3911-4852", "3352-2058", "ODONTO 3352-5846"], email: "marcacaopsaojoao@gmail.com", distrito: "eldorado" },
+      { nome: "USF Jardim Eldorado I (USF 74)", endereco: "Rua Canafistula N° 245", telefones: ["3351-6735", "3352-5254"], email: "usfjardimeldorado@gmail.com", distrito: "eldorado" },
+      { nome: "USF Jardim Eldorado II (USF 75)", endereco: "Rua Canafistula N° 245", telefones: ["3351-6735", "3352-5254"], email: "usfjardimeldorado@gmail.com", distrito: "eldorado" },
+      { nome: "USF Perobas", endereco: "Rua Doze N° 43", telefones: ["3912-4620", "(99257-1805 Institucional)"], email: "perobas70@gmail.com", distrito: "eldorado" },
+      { nome: "USF Bela Vista (USF 68)", endereco: "Carlos Vitoriano de Sá N° 625", telefones: ["3352-2545"], email: "marcacaousfbelavista@gmail.com", distrito: "eldorado" },
+      // ---- INDUSTRIAL ----
+      { nome: "Diretoria do Distrito Industrial", endereco: "Rua Japurá, nº 214 - Bairro Amazonas", telefones: ["3363-5791", "3363-6290", "3363-6092", "3363-8880", "3363-5673", "3363-3882", "3361-1117"], email: "distritoindustrial@contagem.mg.gov.br / gcdistritoindustrial@gmail.com", distrito: "industrial" },
+      { nome: "UBS Amazonas", endereco: "Rua Marquês do Paraná, nº111 - Bairro Amazonas", telefones: ["99257-0872", "3363-3420"], email: "marcacaoubsamazonas@gmail.com", distrito: "industrial" },
+      { nome: "UBS Bandeirantes", endereco: "Rua Oito, nº20 - Bairro Santa Maria", telefones: ["99257-0115"], email: "ubsbandeirantes.agendamento@gmail.com", distrito: "industrial" },
+      { nome: "UBS Industrial III", endereco: "Rua Coronel Américo Leite, nº464 - Bairro Industrial", telefones: ["3385-5998"], email: "ubsindustrial3@gmail.com", distrito: "industrial" },
+      { nome: "UBS Jardim Industrial", endereco: "Rua Henrique Zikler, nº97", telefones: ["3363-7140"], email: "jardimindustrial.agendamento@gmail.com", distrito: "industrial" },
+      { nome: "UBS João Evangelista", endereco: "Rua Coronel Vicente Ferreira Carneiro, nº625", telefones: ["99257-2502"], email: "ubsjoaoevangelista@gmail.com", distrito: "industrial" },
+      { nome: "UBS Vila Diniz", endereco: "Rua Osório de Moraes, nº95", telefones: ["3363-5842"], email: "marcacaoviladinizcontagem@gmail.com", distrito: "industrial" },
+      { nome: "UBS Vila São Paulo", endereco: "Rua Alexandre Herculano, nº35", telefones: ["3363-5821"], email: "ubsvilasaopaulo2025@gmail.com", distrito: "industrial" },
+      // ---- RESSACA ----
+      { nome: "Distrito Ressaca", endereco: "Rua Viena, 328 - Parque Recreio", telefones: ["3354-6367", "3354-6221", "3354-6220", "3352-5703", "3354-5215", "3354-5247", "3354-5419", "3354-6317", "3354-6386"], email: "distrito.ressaca@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Arpoador", endereco: "R. Mariana s/n", telefones: ["3352-5762", "3351-8923"], email: "ubs.arpoador@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Colorado", endereco: "R. Paineiras,96", telefones: ["3393-7338", "3352-5862", "3394-3790"], email: "ubs.colorado@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Campina Verde", endereco: "R. Joaquim F. de Barros,198", telefones: ["3352-5706"], email: "ubs.campinaverde@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Laguna", endereco: "R. Bragança,872", telefones: ["3352-5718", "3354-6362", "3394-9518"], email: "ubs.laguna@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Morada Nova", endereco: "R. José Mendes Ferreira,118", telefones: ["3352-5256"], email: "ubs.moradanova@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Novo Boa Vista", endereco: "R. Panamá,60", telefones: ["3352-5699"], email: "ubs.novoboavista@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Novo Progresso II", endereco: "R. Avilmar Carneiro,1643", telefones: ["3352-5243"], email: "ubsnovoprogresso2@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Oitis", endereco: "R.34, 499", telefones: ["3352-5814", "3912-7987"], email: "ubs.oitis@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Parque Turista", endereco: "R. Paraopeba,315", telefones: ["3352-5693", "3354-8882"], email: "ubs.parqueturista@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Presidente Kennedy", endereco: "R. Democracia,65", telefones: ["3352-5761"], email: "ubs.presidentekennedy@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS Vila Pérola", endereco: "R. Campina Verde,18", telefones: ["3393-7020", "3352-5818", "3352-5757"], email: "ubs.vilaperola@contagem.mg.gov.br", distrito: "ressaca" },
+      { nome: "UBS São Joaquim", endereco: "R. Rubi,83", telefones: ["3357-9671", "3357-4761", "5723"], email: "ubs.saojoaquim@contagem.mg.gov.br", distrito: "ressaca" },
+      // ---- NACIONAL ----
+      { nome: "Distrito Sanitário Nacional", endereco: "Rua Ametista,383 - Pedra Azul", telefones: ["3352-5720", "3352-5863", "3737-7464", "3354-4680", "3397-3739", "3913-6324"], email: "distrito.nacional@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Joaquim Murtinho", endereco: "Rua Lúcia Muniz,476", telefones: ["3397-1856", "3352-5747", "3352-5702"], email: "ubs.joaquimmurtinho@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Nacional", endereco: "Rua Benjamim Constant,701", telefones: ["3913-6175", "3397-2297", "3397-1940"], email: "ubs.nacional@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Amendoeiras", endereco: "Rua Seis,52", telefones: ["3397-3516"], email: "ubs.amendoeiras@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Ilda Eugênia", endereco: "Rua das Paineiras,20", telefones: ["3912-7380", "3913-8542"], email: "ubs.ildaefigenia@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Tijuco", endereco: "Rua Laudelina Castorino,384", telefones: ["3352-5609", "3397-4402"], email: "ubs.tijuca@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Estrela Dalva", endereco: "Rua Búzios,56", telefones: ["3913-3622", "3397-3634"], email: "ubs.estreladalva@contagem.mg.gov.br", distrito: "nacional" },
+      { nome: "UBS Xangrilá", endereco: "Rua Capitólio,72", telefones: ["3352-5824", "3354-8772"], email: "ubs.xangrila@contagem.mg.gov.br", distrito: "nacional" },
+      // ---- VARGEM DAS FLORES ----
+      { nome: "Distrito Vargem das Flores", endereco: "Rua VL-7, s/n", telefones: ["(31) 3392-9807"], email: "distrito.vargemdasflores@contagem.mg.gov.br", distrito: "vargem" },
+      { nome: "USF Retiro", endereco: "Rua dos Coqueiros, 100 – Retiro", telefones: ["3352-5264", "3392-8646"], email: "usfretiro1e3@gmail.com", distrito: "vargem" },
+      { nome: "UBS São Judas Tadeu", endereco: "Rua São Judas Tadeu, 50 – São Judas", telefones: ["3392-8047", "3352-5686", "8047"], email: "ubs.saojudastadeu@contagem.mg.gov.br", distrito: "vargem" },
+      { nome: "UBS Vila Renascer", endereco: "Rua das Esperanças, 100 – Vila Renascer", telefones: ["3352-3084", "3356-1518"], email: "vilarenascerpsf@gmail.com", distrito: "vargem" },
+      { nome: "UBS Vila Soledade", endereco: "Rua da Soledade, 300 – Vila Soledade", telefones: ["3352-5655", "3352-5707"], email: "psfvilasoledade1e2@gmail.com", distrito: "vargem" },
+      { nome: "UBS Ipê Amarelo", endereco: "Rua dos Ipês, 120 – Ipê Amarelo", telefones: ["3911-6291", "8455"], email: "ipeamarelopsf@gmail.com", distrito: "vargem" },
+      { nome: "UBS Darcy Ribeiro", endereco: "Rua VL 7, 120 – Nova Contagem", telefones: ["3911-3953"], email: "psfdarcyribeiro7152@gmail.com", distrito: "vargem" },
+      { nome: "UBS Icaivera", endereco: "Rua Poranga, 170 – Icaivera", telefones: ["3352-5307"], email: "icaiverapsf@gmail.com", distrito: "vargem" },
+      { nome: "UBS Tupã", endereco: "Rua Tupã, 80 – Tupã", telefones: ["3914-1146"], email: "tupapsf@gmail.com", distrito: "vargem" },
+      { nome: "UBS Liberdade II", endereco: "Rua Cinco, número 106", telefones: ["99257-0211", "99169-4751"], email: "postoliberdade2@gmail.com", distrito: "vargem" },
+      { nome: "Penitenciária Nelson Hungria (enfermagem)", endereco: "Rodovia BR-381, Km 510 – Vargem das Flores", telefones: ["2129-9545 Ramal 1431", "3392-8161"], email: "distritovargemdasflores@contagem.mg.gov.br / cpnhenfermagem@seguranca.mg.gov.br", distrito: "vargem" },
+      { nome: "Penitenciária Nelson Hungria (saúde)", endereco: "Rodovia BR-381, Km 510 – Vargem das Flores", telefones: ["2129-9545 Ramal 1431", "3392-8161"], email: "distritovargemdasflores@contagem.mg.gov.br / saudecpnh@seguranca.mg.gov.br", distrito: "vargem" },
+      { nome: "Nova Contagem (antiga Nova Contagem II)", endereco: "Rua VL 2, 250 – Nova Contagem", telefones: ["3356-8195"], email: "ubsnovacontagem@gmail.com", distrito: "vargem" },
+      { nome: "Nova Contagem I", endereco: "Rua VL 1, 150 – Nova Contagem", telefones: ["3352-5258"], email: "ubsnovacontagem@gmail.com", distrito: "vargem" },
+      { nome: "UBS Estaleiro", endereco: "Rua dos Estaleiros, 75 – Estaleiro", telefones: ["3352-5689"], email: "ubsnovacontagem@gmail.com", distrito: "vargem" },
+      { nome: "Vila Nova Esperança", endereco: "Rua da Esperança, 200 – Vila Esperança", telefones: ["3352-5688"], email: "ubsnovacontagem@gmail.com", distrito: "vargem" },
+      // ---- PETROLÂNDIA ----
+      { nome: "Coordenação Distrito Petrolândia", endereco: "Rua Refinaria Gabriel Passos, 287, Petrolândia", telefones: ["3352-5794", "3352-5267", "3397-7834", "3397-7836"], email: "distrito.petrolandia@contagem.mg.gov.br", distrito: "petrolândia" },
+      { nome: "ESF Campo Alto (Eq. 17)", endereco: "Avenida B, nº 1012 Bairro: Campo alto CEP: 32070-380", telefones: ["3391-8888"], email: "ubs.campoaltotropical1@gmail.com", distrito: "petrolândia" },
+      { nome: "ESF Tropical I (Eq. 61)", endereco: "Avenida B, nº 1012 Bairro: Campo alto CEP: 32070-380", telefones: ["3391-8888"], email: "ubs.campoaltotropical1@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS São Luiz I (ESF São Luiz I - Eq 56)", endereco: "Rua Itutinga, nº 242 - Bairro: São Luiz CEP: 32073-100", telefones: ["3352-3697"], email: "ubs.saoluiz1@contagem.mg.gov.br", distrito: "petrolândia" },
+      { nome: "UBS São Luiz II (ESF São Luiz II - Eq 57)", endereco: "Rua Madeirão, nº 282 A - Bairro: São Luiz CEP: 32073-680", telefones: ["3352-5783"], email: "ubs.saoluiz2@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Petrolândia (ESF Petrolândia I - Eq 58)", endereco: "Rua Benzina, nº 10, esq. Rua Refinaria Gabriel Passos, Petrolândia", telefones: ["3352-4695-353-3926"], email: "ubs.petrolandia1@contagem.mg.gov.br", distrito: "petrolândia" },
+      { nome: "UBS Duque de Caxias (ESF Petrolândia II - Eq 59)", endereco: "Rua Refinaria Duque de Caxias 297 Petrolândia", telefones: ["3352-6684", "99257-2430"], email: "petro2marca@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Duque de Caxias (ESF Petrolândia III - Eq 401)", endereco: "Rua Refinaria Duque de Caxias 297 Petrolândia", telefones: ["3352-6684", "99257-2430"], email: "petro2marca@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Duque de Caxias - ESF Duque de Caxias I", endereco: "Rua Refinaria Duque de Caxias 297 Petrolândia", telefones: ["3352-6684", "99257-2430"], email: "petro2marca@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Sapucaias (ESF Sapucais II - Eq. 87)", endereco: "Rua Amazonitas, nº 230 - Bairro: Sapucaias CEP: 32150-280", telefones: ["3352-4673", "3397-8120", "99257-2431"], email: "marcacaosapucaias@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Sapucaias (ESF Sapucais I - Eq 60)", endereco: "Rua Amazonitas, nº 230 - Bairro: Sapucaias CEP: 32150-280", telefones: ["3352-4673", "3397-8120", "99257-2431"], email: "marcacaosapucaias@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Tropical II", endereco: "Avenida Durval Alves de Faria, 1915, Tropical CEP 32070-040", telefones: ["3352-5784", "99257-1524"], email: "ubs.tropical2@contagem.mg.gov.br", distrito: "petrolândia" },
+      { nome: "ESF Tropical II (Eq 62)", endereco: "Avenida Durval Alves de Faria, 1915, Tropical CEP 32070-040", telefones: ["3352-5784", "99257-1524"], email: "ubs.tropical2@contagem.mg.gov.br", distrito: "petrolândia" },
+      { nome: "UBS Nascentes Imperiais (ESF Nascentes Imperiais)", endereco: "Rua oitenta e um Nº16, Bairro Tropical/Estâncias Imperiais CEP 32070060", telefones: ["3911-3701"], email: "ubsnascentesimperiais@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Nascentes Imperiais (Eq.400)", endereco: "Rua oitenta e um Nº16, Bairro Tropical/Estâncias Imperiais CEP 32070060", telefones: ["3911-3701"], email: "ubsnascentesimperiais@gmail.com", distrito: "petrolândia" },
+      { nome: "UBS Estâncias Imperiais (ESF Estâncias Imperiais Eq. 90)", endereco: "AV DOS TECLADOS N:1037 BAIRRO; ESTÂNCIAS IMPERIAIS", telefones: ["3352-8660"], email: "ubs.estanciasimperiais@contagem.mg.gov.br", distrito: "petrolândia" },
+      // ---- SEDE ----
+      { nome: "Distrito Sanitário Sede", endereco: "Avenida Prefeito Gil Diniz, nº 401 A", telefones: ["(31) 3391-1840"], email: "marcacao64e65@outlook.com", distrito: "sede" },
+      { nome: "UBS Centro", endereco: "Avenida Prefeito Gil Diniz, 400 – Centro", telefones: ["3397-0340", "3397-0341"], email: "ubscentrocad@gmail.com", distrito: "sede" },
+      { nome: "UBS Linda Vista", endereco: "Rua Arthur de Souza Costa, 10 – Linda Vista", telefones: ["3397-0342", "3397-0343"], email: "ubslindavista@gmail.com", distrito: "sede" },
+      { nome: "UBS Bernardo Monteiro", endereco: "Rua Padre Rossini Cota, 45 – Bernardo Monteiro", telefones: ["3397-0344", "3397-0345"], email: "ubs.bernardo.monteiro@gmail.com", distrito: "sede" },
+      { nome: "UBS Alvorada", endereco: "Rua Tibúrcio Custódio, 109 – Alvorada", telefones: [], email: "alvoradapsf@gmail.com", distrito: "sede" },
+      { nome: "UBS Funcionários (Eq. 69)", endereco: "Rua Dona Guilhermina, 31 – Funcionários", telefones: [], email: "ubsfuncionarios1@gmail.com", distrito: "sede" },
+      { nome: "PSF Vila Itália", endereco: "Rua Prefeito Gil Diniz, 46 (ou Av. Prefeito Gil Diniz, 46) – Fonte Grande", telefones: [], email: "psfvilaitalia@gmail.com", distrito: "sede" },
+      { nome: "UBS Chácaras Novo", endereco: "Rua dos Pioneiros, 25 – Chácaras", telefones: [], email: "ubs.chacaras@contagem.mg.gov.br", distrito: "sede" },
+      { nome: "UBS Maria da Conceição", endereco: "Rua Pará de Minas, s/n – Santa Edwiges / Maria da Conceição", telefones: [], email: "ubsmariadaconceicao@gmail.com", distrito: "sede" },
+      { nome: "USF Canadá", endereco: "Rua Pedro Henrique Trindade da Silva, 60 – Canadá", telefones: [], email: "psfcanada@yahoo.com / psfcanada66@gmail.com / ubs.canada@contagem.mg.gov.br", distrito: "sede" },
+      { nome: "UBS Unidade XVI", endereco: "Rua Joaquim Camargos, 47 – Sede / Arcádia", telefones: [], email: "ubsubssede@gmail.com", distrito: "sede" },
+      { nome: "UBS SEDE", endereco: "Avenida Prefeito Gil Diniz, 401-A – Centro / Arcádia", telefones: [], email: "ubssede@gmail.com", distrito: "sede" },
+      { nome: "UBS Nossa Senhora de Fátima", endereco: "Rua São Vicente, 100 – Nossa Senhora de Fátima", telefones: ["3397-0346", "3397-0347"], email: "", distrito: "sede" },
+      { nome: "UBS Praia", endereco: "Rua do Registro, 1500 – Praia", telefones: ["3397-0350", "3397-0351"], email: "praiamarcacao@gmail.com", distrito: "sede" },
+      { nome: "UBS Santa Helena", endereco: "Rua Esmeralda, 200 – Santa Helena", telefones: ["3397-0352", "3397-0353"], email: "", distrito: "sede" },
+      { nome: "UBS São Geraldo", endereco: "Rua São Pedro, 100 – São Geraldo", telefones: ["3397-0354", "3397-0355"], email: "", distrito: "sede" },
+      { nome: "UBS Vila Rica", endereco: "Rua das Paineiras, 10 – Campo Alto", telefones: ["3397-0319"], email: "", distrito: "sede" },
+      // ---- RIACHO ----
+      { nome: "Distrito Sanitário Riacho", endereco: "Avenida Rio Negro, 95, 3º andar - Riacho das Pedras", telefones: ["3911-7179", "3911-7180"], email: "gc.distritoriacho@gmail.com", distrito: "riacho" },
+      { nome: "UBS Monte Castelo", endereco: "Rua Padre José Maria de Man, 1630 - Monte Castelo", telefones: ["3352-5314", "3246-4900"], email: "ubsmontecastelo.marcacao@gmail.com", distrito: "riacho" },
+      { nome: "UBS Novo Riacho", endereco: "Rua Rio Orenoco, 457 - Novo Riacho", telefones: ["3352-5266", "3396-3605"], email: "ubsnovoriacho.marcacao@gmail.com", distrito: "riacho" },
+      { nome: "UBS Durval de Barros I", endereco: "Rua Alfa Gomes, 184 – Durval de Barros", telefones: ["3385-5808"], email: "ubsdurval1.marcacao@gmail.com", distrito: "riacho" },
+      { nome: "UBS Flamengo", endereco: "Rua Monsenhor Messias, 456 – Flamengo", telefones: ["3363-5252", "3362-1480"], email: "ubsflamengo.marcacao@gmail.com", distrito: "riacho" },
+      { nome: "UBS Riacho", endereco: "Avenida Rio Negro, 95 - Riacho das Pedras", telefones: ["3911-7161", "3356-1165"], email: "ubsriacho.marcacao@gmail.com", distrito: "riacho" },
+      { nome: "UBS Inconfidentes", endereco: "Rua Major Senocrit, 65 - Inconfidentes", telefones: ["3364-7068", "3364-4721"], email: "ubsinconfidentes.marcacao@gmail.com", distrito: "riacho" }
+    ];
+
+    // ----- DOM refs -----
+    const container = document.getElementById('cardsContainer');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    let currentFilter = 'todos';
+    let currentSearch = '';
+
+    // ----- render cards -----
+    function render() {
+      const filtered = unidades.filter(item => {
+        // distrito
+        if (currentFilter !== 'todos' && item.distrito !== currentFilter) return false;
+        // search (nome, endereco, telefones, email)
+        if (currentSearch.trim() !== '') {
+          const q = currentSearch.trim().toLowerCase();
+          const nomeMatch = item.nome.toLowerCase().includes(q);
+          const endMatch = item.endereco.toLowerCase().includes(q);
+          const telMatch = item.telefones.some(t => t.toLowerCase().includes(q));
+          const emailMatch = item.email.toLowerCase().includes(q);
+          if (!(nomeMatch || endMatch || telMatch || emailMatch)) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="no-results">🔎 Nenhuma unidade encontrada com esse filtro ou busca.</div>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(item => {
+        const telefonesHtml = item.telefones.length
+          ? item.telefones.map(t => `<span>${t}</span>`).join(' ')
+          : '<span style="opacity:0.6;">—</span>';
+
+        const emailHtml = item.email
+          ? `<div class="card-email">📧 <a href="mailto:${item.email}">${item.email}</a></div>`
+          : '';
+
+        const distritoLabel = item.distrito.charAt(0).toUpperCase() + item.distrito.slice(1);
+
+        html += `
+          <div class="card" data-distrito="${item.distrito}">
+            <div class="card-title">${item.nome}</div>
+            <div class="card-distrito">🏷️ ${distritoLabel}</div>
+            <div class="card-address"><span class="icon-addr"></span> ${item.endereco}</div>
+            <div class="card-phone"><span class="icon-phone"></span> ${telefonesHtml}</div>
+            ${emailHtml}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // ----- filter + search triggers -----
+    function applyFilterAndSearch() {
+      render();
+    }
+
+    // eventos de filtro
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.dataset.distrito;
+        applyFilterAndSearch();
+      });
+    });
+
+    // eventos de busca
+    function handleSearch() {
+      currentSearch = searchInput.value;
+      applyFilterAndSearch();
+    }
+
+    searchButton.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') handleSearch();
+    });
+
+    // inicial
+    render();
+  })();
+</script>
+</body>
+</html>
